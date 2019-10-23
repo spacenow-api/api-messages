@@ -8,15 +8,46 @@ dotenv:
     - ACCOUNT_ID
 
 custom:
-  poolId: ${env:POOL_ID}
-  accountId: ${env:ACCOUNT_ID}
+  domains:
+    default: ${self:service}.${opt:stage, 'sandpit'}.cloud.spacenow.com
+    prod: ${self:service}.spacenow.com
+  subnet:
+    sandpit:
+      privateA: subnet-0c75bbd1ea60481d4
+      privateB: subnet-070ac699acd775765
+      privateC: subnet-0eca793083726120c
+    prod:
+      privateA: subnet-04d5af2458ebdabbf
+      privateB: subnet-010ee1d571a9ca82c
+      privateC: subnet-069abf1da82eb3acc
+  securityGroup:
+    sandpit: sg-0dbf2b9d996f4c91e
+    prod: sg-00b4a2172f7e29276
+  customDomain:
+    domainName: ${self:custom.domains.${opt:stage, 'sandpit'}, self:custom.domains.default}
+    basePath: ""
+    stage: ${opt:stage, 'sandpit'}
+    certificateArn: ${ssm:/${opt:stageCert, 'SANDPIT'}/ACM_CERTIFICATE}
+    createRoute53Record: true
+    endpointType: "regional"
   prune:
     automatic: true
-    number: 3
+    number: 5
 
 provider:
   name: aws
   runtime: nodejs10.x
+  timeout: 20
+  versionFunctions: false
+  stage: ${opt:stage, 'sandpit'}
+  region: ap-southeast-2
+  vpc:
+    securityGroupIds:
+      - ${self:custom.securityGroup.${opt:stage, 'sandpit'}}
+    subnetIds:
+      - ${self:custom.subnet.${opt:stage, 'sandpit'}.privateA}
+      - ${self:custom.subnet.${opt:stage, 'sandpit'}.privateB}
+      - ${self:custom.subnet.${opt:stage, 'sandpit'}.privateC}
 
 functions:
   - ${file(src/functions/message.yml)}
