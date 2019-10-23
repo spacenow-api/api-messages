@@ -1,0 +1,24 @@
+post-message-item:
+  handler: src/functions/message-item/post-message-item.main
+  events:
+    - http:
+        path: message-item
+        method: post
+get-message-items:
+  handler: src/functions/message-item/get-message-items.main
+  events:
+    - http:
+        path: message-items/{id}
+        method: get
+count-unread-message-items:
+  handler: src/functions/message-item/count-unread-message-items.main
+  events:
+    - http:
+        path: unread-message-items/{id}
+        method: get
+read-message-items:
+  handler: src/functions/message-item/read-message-items.main
+  events:
+    - http:
+        path: read-message-items/{id}
+        method: put

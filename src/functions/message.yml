@@ -1,0 +1,30 @@
+post-message:
+  handler: src/functions/message/post-message.main
+  events:
+    - http:
+        path: message
+        method: post
+get-message:
+  handler: src/functions/message/get-message.main
+  events:
+    - http:
+        path: message/{id}
+        method: get
+get-user-messages:
+  handler: src/functions/message/get-user-messages.main
+  events:
+    - http:
+        path: messages/{id}
+        method: get
+count-unread-messages:
+  handler: src/functions/message/count-unread-messages.main
+  events:
+    - http:
+        path: unread-messages/{id}
+        method: get
+read-message:
+  handler: src/functions/message/read-message.main
+  events:
+    - http:
+        path: read-message/{id}
+        method: put
