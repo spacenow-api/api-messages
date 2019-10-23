@@ -1,11 +1,10 @@
 service: api-messages
 
-dotenv:
-  path: ./.env
-  basePath: ./
-  include:
-    - POOL_ID
-    - ACCOUNT_ID
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+  - serverless-domain-manager
+  - serverless-prune-plugin
 
 custom:
   domains:
@@ -25,14 +24,18 @@ custom:
     prod: sg-00b4a2172f7e29276
   customDomain:
     domainName: ${self:custom.domains.${opt:stage, 'sandpit'}, self:custom.domains.default}
-    basePath: ""
+    basePath: ''
     stage: ${opt:stage, 'sandpit'}
     certificateArn: ${ssm:/${opt:stageCert, 'SANDPIT'}/ACM_CERTIFICATE}
     createRoute53Record: true
-    endpointType: "regional"
+    endpointType: 'regional'
   prune:
     automatic: true
     number: 5
+
+dotenv:
+  path: ./.env
+  basePath: ./
 
 provider:
   name: aws
@@ -50,13 +53,78 @@ provider:
       - ${self:custom.subnet.${opt:stage, 'sandpit'}.privateC}
 
 functions:
-  - ${file(src/functions/message.yml)}
-  - ${file(src/functions/message-item.yml)}
-
-plugins:
-  - serverless-offline
-  - serverless-prune-plugin
-  - serverless-dotenv-plugin
+  post-message:
+    handler: src/functions/message/post-message.main
+    memorySize: 1024
+    events:
+      - http:
+          path: message
+          method: post
+          cors: true
+  get-message:
+    handler: src/functions/message/get-message.main
+    memorySize: 1024
+    events:
+      - http:
+          path: message/{id}
+          method: get
+          cors: true
+  get-user-messages:
+    handler: src/functions/message/get-user-messages.main
+    memorySize: 1024
+    events:
+      - http:
+          path: messages/{id}
+          method: get
+          cors: true
+  count-unread-messages:
+    handler: src/functions/message/count-unread-messages.main
+    memorySize: 1024
+    events:
+      - http:
+          path: unread-messages/{id}
+          method: get
+          cors: true
+  read-message:
+    handler: src/functions/message/read-message.main
+    memorySize: 1024
+    events:
+      - http:
+          path: read-message/{id}
+          method: put
+          cors: true
+  post-message-item:
+    handler: src/functions/message-item/post-message-item.main
+    memorySize: 1024
+    events:
+      - http:
+          path: message-item
+          method: post
+          cors: true
+  get-message-items:
+    handler: src/functions/message-item/get-message-items.main
+    memorySize: 1024
+    events:
+      - http:
+          path: message-items/{id}
+          method: get
+          cors: true
+  count-unread-message-items:
+    handler: src/functions/message-item/count-unread-message-items.main
+    memorySize: 1024
+    events:
+      - http:
+          path: unread-message-items/{id}
+          method: get
+          cors: true
+  read-message-items:
+    handler: src/functions/message-item/read-message-items.main
+    memorySize: 1024
+    events:
+      - http:
+          path: read-message-items/{id}
+          method: put
+          cors: true
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
