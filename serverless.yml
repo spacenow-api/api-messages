@@ -1,4 +1,4 @@
-service: australia-loop-categories
+service: api-messages
 
 dotenv:
   path: ./.env
