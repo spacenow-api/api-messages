@@ -24,11 +24,11 @@ custom:
     prod: sg-00b4a2172f7e29276
   customDomain:
     domainName: ${self:custom.domains.${opt:stage, 'sandpit'}, self:custom.domains.default}
-    basePath: ''
+    basePath: ""
     stage: ${opt:stage, 'sandpit'}
     certificateArn: ${ssm:/${opt:stageCert, 'SANDPIT'}/ACM_CERTIFICATE}
     createRoute53Record: true
-    endpointType: 'regional'
+    endpointType: "regional"
   prune:
     automatic: true
     number: 5
@@ -36,6 +36,14 @@ custom:
 dotenv:
   path: ./.env
   basePath: ./
+include:
+  - DOMAIN
+  - ADMIN_EMAIL
+  - DATABASE_SCHEMA
+  - DATABASE_HOST
+  - DATABASE_USERNAME
+  - DATABASE_PASSWORD
+  - API_MESSAGES
 
 provider:
   name: aws
