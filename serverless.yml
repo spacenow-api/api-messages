@@ -36,14 +36,11 @@ custom:
 dotenv:
   path: ./.env
   basePath: ./
-include:
-  - DOMAIN
-  - ADMIN_EMAIL
-  - DATABASE_SCHEMA
-  - DATABASE_HOST
-  - DATABASE_USERNAME
-  - DATABASE_PASSWORD
-  - API_MESSAGES
+  include:
+    - DATABASE_SCHEMA
+    - DATABASE_HOST
+    - DATABASE_USERNAME
+    - DATABASE_PASSWORD
 
 provider:
   name: aws
@@ -59,6 +56,11 @@ provider:
       - ${self:custom.subnet.${opt:stage, 'sandpit'}.privateA}
       - ${self:custom.subnet.${opt:stage, 'sandpit'}.privateB}
       - ${self:custom.subnet.${opt:stage, 'sandpit'}.privateC}
+  environment:
+    DATABASE_SCHEMA: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_SCHEMA~true}
+    DATABASE_HOST: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_HOST~true}
+    DATABASE_USERNAME: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_USER~true}
+    DATABASE_PASSWORD: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_PASSWORD~true}
 
 functions:
   post-message:
