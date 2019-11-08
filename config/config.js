@@ -8,6 +8,5 @@ module.exports = {
     logging: process.env.DEBUG ? console.debug : false,
     underscored: true,
     freezeTableName: true
-    // connectTimeout: 60000  testing with this
   }
 }
