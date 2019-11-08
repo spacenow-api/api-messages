@@ -7,7 +7,7 @@ module.exports = {
     password: process.env.DATABASE_PASSWORD,
     logging: process.env.DEBUG ? console.debug : false,
     underscored: true,
-    freezeTableName: true,
-    connectTimeout: 60000
+    freezeTableName: true
+    // connectTimeout: 60000  testing with this
   }
 }
