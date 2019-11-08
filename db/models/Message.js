@@ -31,6 +31,12 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: false,
         field: 'is_read'
       },
+      // status: {
+      //   type: DataTypes.ENUM(
+      //     'archive',
+      //     'save'
+      //   ),
+      // },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
