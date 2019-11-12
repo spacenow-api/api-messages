@@ -9,7 +9,7 @@ module.exports.main = (event, context, callback) => {
     .getUserMessages(id, type, pageIndex, pageSize)
     .then(data => callback(null, r.success(data)))
     .catch(err => {
-      console.log('error in graph qpi', err)
+      console.error('error in graph qpi', err)
       return callback(null, r.failure(err))
     })
 }
