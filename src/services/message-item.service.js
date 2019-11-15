@@ -1,10 +1,11 @@
 'use strict'
 
-const { MessageItem } = require('../../db/models')
-const paginate = require('../helpers/paginate.utils')
 const { Op } = require('sequelize')
 
-const postMessageItem = async value => {
+const { MessageItem } = require('../../db/models')
+const paginate = require('../helpers/paginate.utils')
+
+const postMessageItem = async (value) => {
   try {
     const data = await MessageItem.create(value)
     return data
@@ -43,15 +44,25 @@ const countUnreadMessageItems = async (id, userId) => {
   }
 }
 
-const readMessageItems = async id => {
+const readMessageItems = async (id) => {
   try {
-    const valueToUpdate = await MessageItem.findOne({ where: { messageId: id } })
+    const valueToUpdate = await MessageItem.findOne({
+      where: { messageId: id }
+    })
     if (!valueToUpdate) throw new Error(`Message Item ${id} not found.`)
-    const data = await MessageItem.update({ isRead: 1 }, { where: { messageId: id } })
+    const data = await MessageItem.update(
+      { isRead: 1 },
+      { where: { messageId: id } }
+    )
     return { isRead: data[0] }
   } catch (error) {
     throw error
   }
 }
 
-module.exports = { postMessageItem, getMessageItems, countUnreadMessageItems, readMessageItems }
+module.exports = {
+  postMessageItem,
+  getMessageItems,
+  countUnreadMessageItems,
+  readMessageItems
+}

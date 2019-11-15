@@ -1,13 +1,18 @@
 'use strict'
 
+const { Op } = require('sequelize')
+
 const { Message } = require('../../db/models')
 const { MessageItem } = require('../../db/models')
 const paginate = require('../helpers/paginate.utils')
-const { Op } = require('sequelize')
 
-const postMessage = async value => {
+const postMessage = async (value) => {
   const values = {
-    where: { listingId: value.listingId, hostId: value.hostId, guestId: value.guestId }
+    where: {
+      listingId: value.listingId,
+      hostId: value.hostId,
+      guestId: value.guestId
+    }
   }
   try {
     let data = await Message.findOne(values)
@@ -25,7 +30,7 @@ const postMessage = async value => {
   }
 }
 
-const getMessage = async id => {
+const getMessage = async (id) => {
   try {
     const data = await Message.findOne({
       where: {
@@ -55,12 +60,18 @@ const getUserMessages = async (id, type, pageIndex = 0, pageSize = 10) => {
   const where = {
     where: condition,
     ...paginate(pageIndex, pageSize),
-    order: [['isRead', 'ASC'], ['updatedAt', 'DESC']],
+    order: [
+      ['isRead', 'ASC'],
+      ['updatedAt', 'DESC']
+    ],
     include: [
       {
         model: MessageItem,
         as: 'messageItems',
-        order: [['isRead', 'ASC'], ['createdAt', 'DESC']],
+        order: [
+          ['isRead', 'ASC'],
+          ['createdAt', 'DESC']
+        ],
         limit: 1,
         separate: true
       }
@@ -118,4 +129,10 @@ const readMessage = async (id, userId) => {
   }
 }
 
-module.exports = { postMessage, getMessage, getUserMessages, countUnreadMessages, readMessage }
+module.exports = {
+  postMessage,
+  getMessage,
+  getUserMessages,
+  countUnreadMessages,
+  readMessage
+}
