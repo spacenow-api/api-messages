@@ -1,6 +1,6 @@
 {
   "name": "messages",
-  "description": "Category Serverless Stack API",
+  "description": "Message Serverless API",
   "version": "0.1.0",
   "author": "Spacenow",
   "license": "ISC",

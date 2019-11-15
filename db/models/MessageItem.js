@@ -1,59 +1,51 @@
 'use strict'
-module.exports = (sequelize, DataTypes) => {
-  const MessageItem = sequelize.define(
+
+module.exports = function(sequelize, DataTypes) {
+  return sequelize.define(
     'MessageItem',
     {
       id: {
-        type: DataTypes.UUID,
+        type: DataTypes.STRING(36),
         allowNull: false,
-        primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
-        field: 'id'
+        primaryKey: true
       },
       messageId: {
-        type: DataTypes.UUID,
+        type: DataTypes.STRING(36),
         allowNull: false,
-        field: 'message_id'
+        references: {
+          model: 'Message',
+          key: 'id'
+        }
       },
       sentBy: {
-        type: DataTypes.UUID,
+        type: DataTypes.CHAR(36),
         allowNull: false,
-        field: 'sent_by'
+        references: {
+          model: 'User',
+          key: 'id'
+        }
       },
       content: {
         type: DataTypes.TEXT,
-        field: 'content'
+        allowNull: true
       },
       isRead: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.INTEGER(1),
         allowNull: false,
-        defaultValue: false,
-        field: 'is_read'
+        defaultValue: '0'
       },
       createdAt: {
-        allowNull: false,
         type: DataTypes.DATE,
-        field: 'created_at'
+        allowNull: false
       },
       updatedAt: {
-        allowNull: false,
         type: DataTypes.DATE,
-        field: 'updated_at'
+        allowNull: false
       }
     },
     {
-      tableName: 'message_item',
-      indexes: [
-        {
-          unique: true,
-          fields: ['message_id']
-        },
-        {
-          unique: true,
-          fields: ['is_read']
-        }
-      ]
+      tableName: 'MessageItem'
     }
   )
-  return MessageItem
 }
