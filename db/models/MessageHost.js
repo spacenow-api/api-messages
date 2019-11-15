@@ -1,8 +1,8 @@
 'use strict'
 
 module.exports = function(sequelize, DataTypes) {
-  const MessageItem = sequelize.define(
-    'MessageItem',
+  return sequelize.define(
+    'MessageHost',
     {
       id: {
         type: DataTypes.STRING(36),
@@ -18,22 +18,31 @@ module.exports = function(sequelize, DataTypes) {
           key: 'id'
         }
       },
-      sentBy: {
-        type: DataTypes.CHAR(36),
-        allowNull: false,
-        references: {
-          model: 'User',
-          key: 'id'
-        }
-      },
-      content: {
-        type: DataTypes.TEXT,
-        allowNull: true
-      },
-      isRead: {
+      flexibleTime: {
         type: DataTypes.INTEGER(1),
         allowNull: false,
         defaultValue: '0'
+      },
+      peopleQuantity: {
+        type: DataTypes.INTEGER(11),
+        allowNull: false,
+        defaultValue: '1'
+      },
+      reason: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      },
+      reservations: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      },
+      startTime: {
+        type: DataTypes.STRING(10),
+        allowNull: true
+      },
+      endTime: {
+        type: DataTypes.STRING(10),
+        allowNull: true
       },
       createdAt: {
         type: DataTypes.DATE,
@@ -45,16 +54,7 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     {
-      tableName: 'MessageItem'
+      tableName: 'MessageHost'
     }
   )
-
-  MessageItem.associate = function(models) {
-    MessageItem.belongsTo(models.Message, {
-      as: 'message',
-      foreignKey: 'id'
-    })
-  }
-
-  return MessageItem
 }

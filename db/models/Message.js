@@ -58,6 +58,10 @@ module.exports = function(sequelize, DataTypes) {
       as: 'messageItems',
       foreignKey: 'messageId'
     })
+    Message.hasOne(models.MessageHost, {
+      as: 'messageHost',
+      foreignKey: 'messageId'
+    })
   }
 
   return Message

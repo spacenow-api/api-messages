@@ -2,9 +2,9 @@
 
 const { Op } = require('sequelize')
 
-const { Message } = require('../../db/models')
-const { MessageItem } = require('../../db/models')
+const { Message, MessageItem, MessageHost } = require('../../db/models')
 const paginate = require('../helpers/paginate.utils')
+const reservationUtils = require('./../helpers/reservation.utils')
 
 const postMessage = async (value) => {
   const values = {
@@ -18,13 +18,20 @@ const postMessage = async (value) => {
     let data = await Message.findOne(values)
     if (!data) {
       data = await Message.create(values.where)
+      if (value.contactHost) {
+        const messageHostValues = getNewContactHostMessage(value.contactHost)
+        await MessageHost.create({
+          ...messageHostValues,
+          messageId: data.id
+        })
+      }
     }
     await MessageItem.create({
       messageId: data.id,
       sentBy: value.guestId,
       content: value.content
     })
-    return data
+    return getMessage(data.id)
   } catch (error) {
     throw error
   }
@@ -42,9 +49,16 @@ const getMessage = async (id) => {
           as: 'messageItems',
           order: [['createdAt', 'DESC']],
           separate: true
+        },
+        {
+          model: MessageHost,
+          as: 'messageHost'
         }
       ]
     })
+    if (data && data.messageHost) {
+      data.messageHost.reservations = data.messageHost.reservations.split(',')
+    }
     return data
   } catch (error) {
     throw error
@@ -56,7 +70,6 @@ const getUserMessages = async (id, type, pageIndex = 0, pageSize = 10) => {
   if (type === 'guest') {
     condition = { guestId: id }
   }
-
   const where = {
     where: condition,
     ...paginate(pageIndex, pageSize),
@@ -77,10 +90,8 @@ const getUserMessages = async (id, type, pageIndex = 0, pageSize = 10) => {
       }
     ]
   }
-
   try {
-    const data = await Message.findAndCountAll(where)
-    return data
+    return Message.findAndCountAll(where)
   } catch (error) {
     throw error
   }
@@ -127,6 +138,27 @@ const readMessage = async (id, userId) => {
   } catch (error) {
     throw error
   }
+}
+
+const getNewContactHostMessage = (details) => {
+  const messageHost = {
+    flexibleTime: details.hasFlexibleTime ? 1 : 0,
+    peopleQuantity: details.peopleQuantity,
+    reason: details.reason
+  }
+  messageHost.reservations = [...details.reservations].join(',')
+  if (details.bookingPeriod === 'hourly') {
+    messageHost.reservations = [details.reservations[0]]
+    messageHost.startTime = details.checkInTime
+    messageHost.endTime = details.checkOutTime
+  }
+  if (details.bookingPeriod.includes('weekly', 'monthly')) {
+    const endDate = reservationUtils.getEndDate(details.reservations[0], details.period, details.bookingPeriod)
+    const fullReservation = reservationUtils.getDates(details.reservations[0], endDate)
+    const sortedReservation = reservationUtils.onSortDates(fullReservation)
+    messageHost.reservations = sortedReservation.join(',')
+  }
+  return messageHost
 }
 
 module.exports = {
