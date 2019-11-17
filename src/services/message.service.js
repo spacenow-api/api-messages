@@ -87,11 +87,19 @@ const getUserMessages = async (id, type, pageIndex = 0, pageSize = 10) => {
         ],
         limit: 1,
         separate: true
+      },
+      {
+        model: MessageHost,
+        as: 'messageHost'
       }
     ]
   }
   try {
-    return Message.findAndCountAll(where)
+    const messages = await Message.findAndCountAll(where)
+    if (messages && messages.rows) {
+      messages.rows.map((o) => o.messageHost.reservations = o.messageHost.reservations.split(','))
+    }
+    return messages
   } catch (error) {
     throw error
   }
