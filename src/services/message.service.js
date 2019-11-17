@@ -1,31 +1,43 @@
 'use strict'
 
-const { Message } = require('../../db/models')
-const { MessageItem } = require('../../db/models')
-const paginate = require('../helpers/paginate.utils')
 const { Op } = require('sequelize')
 
-const postMessage = async value => {
+const { Message, MessageItem, MessageHost } = require('../../db/models')
+const paginate = require('../helpers/paginate.utils')
+const reservationUtils = require('./../helpers/reservation.utils')
+
+const postMessage = async (value) => {
   const values = {
-    where: { listingId: value.listingId, hostId: value.hostId, guestId: value.guestId }
+    where: {
+      listingId: value.listingId,
+      hostId: value.hostId,
+      guestId: value.guestId
+    }
   }
   try {
     let data = await Message.findOne(values)
     if (!data) {
       data = await Message.create(values.where)
+      if (value.contactHost) {
+        const messageHostValues = getNewContactHostMessage(value.contactHost)
+        await MessageHost.create({
+          ...messageHostValues,
+          messageId: data.id
+        })
+      }
     }
     await MessageItem.create({
       messageId: data.id,
       sentBy: value.guestId,
       content: value.content
     })
-    return data
+    return getMessage(data.id)
   } catch (error) {
     throw error
   }
 }
 
-const getMessage = async id => {
+const getMessage = async (id) => {
   try {
     const data = await Message.findOne({
       where: {
@@ -37,9 +49,16 @@ const getMessage = async id => {
           as: 'messageItems',
           order: [['createdAt', 'DESC']],
           separate: true
+        },
+        {
+          model: MessageHost,
+          as: 'messageHost'
         }
       ]
     })
+    if (data && data.messageHost) {
+      data.messageHost.reservations = data.messageHost.reservations.split(',')
+    }
     return data
   } catch (error) {
     throw error
@@ -51,25 +70,36 @@ const getUserMessages = async (id, type, pageIndex = 0, pageSize = 10) => {
   if (type === 'guest') {
     condition = { guestId: id }
   }
-
   const where = {
     where: condition,
     ...paginate(pageIndex, pageSize),
-    order: [['isRead', 'ASC'], ['updatedAt', 'DESC']],
+    order: [
+      ['isRead', 'ASC'],
+      ['updatedAt', 'DESC']
+    ],
     include: [
       {
         model: MessageItem,
         as: 'messageItems',
-        order: [['isRead', 'ASC'], ['createdAt', 'DESC']],
+        order: [
+          ['isRead', 'ASC'],
+          ['createdAt', 'DESC']
+        ],
         limit: 1,
         separate: true
+      },
+      {
+        model: MessageHost,
+        as: 'messageHost'
       }
     ]
   }
-
   try {
-    const data = await Message.findAndCountAll(where)
-    return data
+    const messages = await Message.findAndCountAll(where)
+    if (messages && messages.rows) {
+      messages.rows.map((o) => o.messageHost.reservations = o.messageHost.reservations.split(','))
+    }
+    return messages
   } catch (error) {
     throw error
   }
@@ -118,4 +148,31 @@ const readMessage = async (id, userId) => {
   }
 }
 
-module.exports = { postMessage, getMessage, getUserMessages, countUnreadMessages, readMessage }
+const getNewContactHostMessage = (details) => {
+  const messageHost = {
+    flexibleTime: details.hasFlexibleTime ? 1 : 0,
+    peopleQuantity: details.peopleQuantity,
+    reason: details.reason
+  }
+  messageHost.reservations = [...details.reservations].join(',')
+  if (details.bookingPeriod === 'hourly') {
+    messageHost.reservations = [details.reservations[0]]
+    messageHost.startTime = details.checkInTime
+    messageHost.endTime = details.checkOutTime
+  }
+  if (details.bookingPeriod.includes('weekly', 'monthly')) {
+    const endDate = reservationUtils.getEndDate(details.reservations[0], details.period, details.bookingPeriod)
+    const fullReservation = reservationUtils.getDates(details.reservations[0], endDate)
+    const sortedReservation = reservationUtils.onSortDates(fullReservation)
+    messageHost.reservations = sortedReservation.join(',')
+  }
+  return messageHost
+}
+
+module.exports = {
+  postMessage,
+  getMessage,
+  getUserMessages,
+  countUnreadMessages,
+  readMessage
+}

@@ -6,6 +6,6 @@ module.exports.main = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false
   messageItemService
     .readMessageItems(id)
-    .then(data => callback(null, r.success(data)))
-    .catch(err => callback(null, r.failure(err)))
+    .then((data) => callback(null, r.success(data)))
+    .catch((err) => callback(null, r.failure(err)))
 }

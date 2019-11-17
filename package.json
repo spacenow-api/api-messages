@@ -1,6 +1,6 @@
 {
   "name": "messages",
-  "description": "Category Serverless Stack API",
+  "description": "Message Serverless API",
   "version": "0.1.0",
   "author": "Spacenow",
   "license": "ISC",
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "body-parser": "~1.19.0",
+    "moment": "~2.24.0",
     "mysql2": "~1.7.0",
     "sequelize": "~5.18.1"
   },

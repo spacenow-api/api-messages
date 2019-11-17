@@ -1,78 +1,67 @@
 'use strict'
-module.exports = (sequelize, DataTypes) => {
+
+module.exports = function(sequelize, DataTypes) {
   const Message = sequelize.define(
     'Message',
     {
       id: {
-        type: DataTypes.UUID,
+        type: DataTypes.STRING(36),
         allowNull: false,
-        primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
-        field: 'id'
+        primaryKey: true
       },
       listingId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(11),
         allowNull: false,
-        field: 'listing_id'
+        references: {
+          model: 'Listing',
+          key: 'id'
+        }
       },
       hostId: {
-        type: DataTypes.UUID,
+        type: DataTypes.CHAR(36),
         allowNull: false,
-        field: 'host_id'
+        references: {
+          model: 'User',
+          key: 'id'
+        }
       },
       guestId: {
-        type: DataTypes.UUID,
+        type: DataTypes.CHAR(36),
         allowNull: false,
-        field: 'guest_id'
+        references: {
+          model: 'User',
+          key: 'id'
+        }
       },
       isRead: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.INTEGER(1),
         allowNull: false,
-        defaultValue: false,
-        field: 'is_read'
+        defaultValue: '0'
       },
-      // status: {
-      //   type: DataTypes.ENUM(
-      //     'archive',
-      //     'save'
-      //   ),
-      // },
       createdAt: {
-        allowNull: false,
         type: DataTypes.DATE,
-        field: 'created_at'
+        allowNull: false
       },
       updatedAt: {
-        allowNull: false,
         type: DataTypes.DATE,
-        field: 'updated_at'
+        allowNull: false
       }
     },
     {
-      tableName: 'message',
-      indexes: [
-        {
-          unique: true,
-          fields: ['listing_id']
-        },
-        {
-          unique: true,
-          fields: ['host_id']
-        },
-        {
-          unique: true,
-          fields: ['guest_id']
-        },
-        {
-          unique: true,
-          fields: ['is_read']
-        }
-      ]
+      tableName: 'Message'
     }
   )
 
   Message.associate = function(models) {
-    Message.hasMany(models.MessageItem, { as: 'messageItems', foreignKey: 'messageId' })
+    Message.hasMany(models.MessageItem, {
+      as: 'messageItems',
+      foreignKey: 'messageId'
+    })
+    Message.hasOne(models.MessageHost, {
+      as: 'messageHost',
+      foreignKey: 'messageId'
+    })
   }
 
   return Message
