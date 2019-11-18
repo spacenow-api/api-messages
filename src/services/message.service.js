@@ -150,6 +150,8 @@ const readMessage = async (id, userId) => {
 
 const getNewContactHostMessage = (details) => {
   const messageHost = {
+    bookingPeriod: details.bookingPeriod,
+    period: details.period,
     flexibleTime: details.hasFlexibleTime ? 1 : 0,
     peopleQuantity: details.peopleQuantity,
     reason: details.reason

@@ -18,6 +18,14 @@ module.exports = function(sequelize, DataTypes) {
           key: 'id'
         }
       },
+      bookingPeriod: {
+        type: DataTypes.ENUM('hourly', 'daily', 'weekly', 'monthly'),
+        allowNull: false
+      },
+      period: {
+        type: DataTypes.INTEGER(11),
+        allowNull: false
+      },
       flexibleTime: {
         type: DataTypes.INTEGER(1),
         allowNull: false,
