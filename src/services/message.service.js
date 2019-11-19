@@ -32,8 +32,8 @@ const postMessage = async (value) => {
       content: value.content
     })
     return getMessage(data.id)
-  } catch (error) {
-    throw error
+  } catch (err) {
+    throw new Error(err)
   }
 }
 
@@ -60,8 +60,8 @@ const getMessage = async (id) => {
       data.messageHost.reservations = data.messageHost.reservations.split(',')
     }
     return data
-  } catch (error) {
-    throw error
+  } catch (err) {
+    throw new Error(err)
   }
 }
 
@@ -105,8 +105,8 @@ const getUserMessages = async (id, type, pageIndex = 0, pageSize = 10) => {
       })
     }
     return messages
-  } catch (error) {
-    throw error
+  } catch (err) {
+    throw new Error(err)
   }
 }
 
@@ -121,8 +121,8 @@ const countUnreadMessages = async (id, type) => {
       where
     })
     return { count: data }
-  } catch (error) {
-    throw error
+  } catch (err) {
+    throw new Error(err)
   }
 }
 
@@ -148,8 +148,8 @@ const readMessage = async (id, userId) => {
       return { isRead: 0 }
     }
     return { isRead: 1 }
-  } catch (error) {
-    throw error
+  } catch (err) {
+    throw new Error(err)
   }
 }
 

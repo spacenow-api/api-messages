@@ -9,7 +9,7 @@ const postMessageItem = async (value) => {
   try {
     const data = await MessageItem.create(value)
     return data
-  } catch (error) {
+  } catch (err) {
     throw new Error(err)
   }
 }
@@ -22,7 +22,7 @@ const getMessageItems = async (id, pageIndex = 0, pageSize = 10) => {
       order: [['createdAt', 'DESC']]
     })
     return data
-  } catch (error) {
+  } catch (err) {
     throw new Error(err)
   }
 }
@@ -39,7 +39,7 @@ const countUnreadMessageItems = async (id, userId) => {
       }
     })
     return data
-  } catch (error) {
+  } catch (err) {
     throw new Error(err)
   }
 }
@@ -55,7 +55,7 @@ const readMessageItems = async (id) => {
       { where: { messageId: id } }
     )
     return { isRead: data[0] }
-  } catch (error) {
+  } catch (err) {
     throw new Error(err)
   }
 }
