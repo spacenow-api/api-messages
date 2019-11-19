@@ -10,7 +10,7 @@ const postMessageItem = async (value) => {
     const data = await MessageItem.create(value)
     return data
   } catch (error) {
-    throw error
+    throw new Error(err)
   }
 }
 
@@ -23,7 +23,7 @@ const getMessageItems = async (id, pageIndex = 0, pageSize = 10) => {
     })
     return data
   } catch (error) {
-    throw error
+    throw new Error(err)
   }
 }
 
@@ -40,7 +40,7 @@ const countUnreadMessageItems = async (id, userId) => {
     })
     return data
   } catch (error) {
-    throw error
+    throw new Error(err)
   }
 }
 
@@ -56,7 +56,7 @@ const readMessageItems = async (id) => {
     )
     return { isRead: data[0] }
   } catch (error) {
-    throw error
+    throw new Error(err)
   }
 }
 
