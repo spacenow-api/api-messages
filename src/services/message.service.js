@@ -7,24 +7,18 @@ const paginate = require('../helpers/paginate.utils')
 const reservationUtils = require('./../helpers/reservation.utils')
 
 const postMessage = async (value) => {
-  const values = {
-    where: {
+  try {
+    const data = await Message.create({
       listingId: value.listingId,
       hostId: value.hostId,
       guestId: value.guestId
-    }
-  }
-  try {
-    let data = await Message.findOne(values)
-    if (!data) {
-      data = await Message.create(values.where)
-      if (value.contactHost) {
-        const messageHostValues = getNewContactHostMessage(value.contactHost)
-        await MessageHost.create({
-          ...messageHostValues,
-          messageId: data.id
-        })
-      }
+    })
+    if (value.contactHost) {
+      const messageHostValues = getNewContactHostMessage(value.contactHost)
+      await MessageHost.create({
+        ...messageHostValues,
+        messageId: data.id
+      })
     }
     await MessageItem.create({
       messageId: data.id,
