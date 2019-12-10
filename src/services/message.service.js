@@ -157,7 +157,7 @@ const getNewContactHostMessage = (details) => {
   }
   messageHost.reservations = [...details.reservations].join(',')
   if (details.bookingPeriod === 'hourly') {
-    messageHost.reservations = [details.reservations[0]]
+    messageHost.reservations = [details.reservations[0]].toString()
     messageHost.startTime = details.checkInTime
     messageHost.endTime = details.checkOutTime
   }
