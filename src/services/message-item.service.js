@@ -24,11 +24,12 @@ const getMessageItems = (id, pageIndex, pageSize) => {
       messageId: id
     }
   }
+
   new Promise((resolve, reject) => {
     MessageItem.findAndCountAll({
       ...paginate(pageIndex, pageSize),
-      ...where,
-      ...order
+      where: { messageId: id },
+      order: [['createdAt', 'DESC']]
     })
       .then(data => resolve(data))
       .catch(err => reject(err))
