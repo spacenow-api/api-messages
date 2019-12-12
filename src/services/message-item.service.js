@@ -2,7 +2,7 @@
 
 const { Op } = require('sequelize')
 
-const { MessageItem } = require('../../db/models')
+const { MessageItem, Message } = require('../../db/models')
 const paginate = require('../helpers/paginate.utils')
 
 const postMessageItem = async value => {
