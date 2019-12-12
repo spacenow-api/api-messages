@@ -25,7 +25,7 @@ const getMessageItems = (id, pageIndex, pageSize) => {
     }
   }
 
-  new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     MessageItem.findAndCountAll({
       ...paginate(pageIndex, pageSize),
       where: { messageId: id },
