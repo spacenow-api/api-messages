@@ -15,17 +15,35 @@ const postMessageItem = async value => {
   }
 }
 
-const getMessageItems = async (id, pageIndex = 0, pageSize = 10) => {
-  try {
-    const data = await MessageItem.findAndCountAll({
-      ...paginate(pageIndex, pageSize),
-      where: { messageId: id },
-      order: [['createdAt', 'DESC']]
-    })
-    return data
-  } catch (err) {
-    throw new Error(err)
+const getMessageItems = (id, pageIndex, pageSize) => {
+  const order = {
+    order: [['createdAt', 'DESC']]
   }
+  const where = {
+    where: {
+      messageId: id
+    }
+  }
+  new Promise((resolve, reject) => {
+    MessageItem.findAndCountAll({
+      ...paginate(pageIndex, pageSize),
+      ...where,
+      ...order
+    })
+      .then(data => resolve(data))
+      .catch(err => reject(err))
+  })
+
+  // try {
+  //   const data = await MessageItem.findAndCountAll({
+  //     ...paginate(pageIndex, pageSize),
+  //     where: { messageId: id },
+  //     order: [['createdAt', 'DESC']]
+  //   })
+  //   return data
+  // } catch (err) {
+  //   throw new Error(err)
+  // }
 }
 
 const countUnreadMessageItems = async (id, userId) => {

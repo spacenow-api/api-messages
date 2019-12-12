@@ -1,12 +1,12 @@
 const messageItemService = require('../../services/message-item.service')
-const r = require('../../helpers/response.utils')
+const { success, failure } = require('../../helpers/response.utils')
 
 module.exports.main = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false
-  const { pageIndex = 0, pageSize = 10 } = event.queryStringParameters
+  const { pageIndex, pageSize } = event.queryStringParameters
   const { id } = event.pathParameters
   messageItemService
-    .getMessageItems(id, pageIndex, pageSize)
-    .then((data) => callback(null, r.success(data)))
-    .catch((err) => callback(null, r.failure(err)))
+    .getMessageItems(id, pageIndex || 0, pageSize || 5)
+    .then(data => callback(null, success(data)))
+    .catch(err => callback(null, failure(err)))
 }
