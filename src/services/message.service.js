@@ -6,7 +6,7 @@ const { Message, MessageItem, MessageHost } = require('../../db/models')
 const paginate = require('../helpers/paginate.utils')
 const reservationUtils = require('./../helpers/reservation.utils')
 
-const postMessage = async (value) => {
+const postMessage = async value => {
   try {
     const data = await Message.create({
       listingId: value.listingId,
@@ -31,7 +31,7 @@ const postMessage = async (value) => {
   }
 }
 
-const getMessage = async (id) => {
+const getMessage = async id => {
   try {
     const data = await Message.findOne({
       where: {
@@ -67,18 +67,12 @@ const getUserMessages = async (id, type, pageIndex = 0, pageSize = 10) => {
   const where = {
     where: condition,
     ...paginate(pageIndex, pageSize),
-    order: [
-      ['isRead', 'ASC'],
-      ['updatedAt', 'DESC']
-    ],
+    order: [['updatedAt', 'DESC'], ['isRead', 'ASC']],
     include: [
       {
         model: MessageItem,
         as: 'messageItems',
-        order: [
-          ['isRead', 'ASC'],
-          ['createdAt', 'DESC']
-        ],
+        order: [['isRead', 'ASC'], ['createdAt', 'DESC']],
         limit: 1,
         separate: true
       },
@@ -91,7 +85,7 @@ const getUserMessages = async (id, type, pageIndex = 0, pageSize = 10) => {
   try {
     const messages = await Message.findAndCountAll(where)
     if (messages && messages.rows) {
-      messages.rows.map((o) => {
+      messages.rows.map(o => {
         if (o.messageHost) {
           o.messageHost.reservations = o.messageHost.reservations.split(',')
         }
@@ -147,7 +141,7 @@ const readMessage = async (id, userId) => {
   }
 }
 
-const getNewContactHostMessage = (details) => {
+const getNewContactHostMessage = details => {
   const messageHost = {
     bookingPeriod: details.bookingPeriod,
     period: details.period,
