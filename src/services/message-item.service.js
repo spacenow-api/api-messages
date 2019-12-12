@@ -5,8 +5,9 @@ const { Op } = require('sequelize')
 const { MessageItem } = require('../../db/models')
 const paginate = require('../helpers/paginate.utils')
 
-const postMessageItem = async (value) => {
+const postMessageItem = async value => {
   try {
+    await Message.update({ isRead: 1 }, { where: { id: value.messageId } }) // For ordering pourposes
     const data = await MessageItem.create(value)
     return data
   } catch (err) {
@@ -44,16 +45,13 @@ const countUnreadMessageItems = async (id, userId) => {
   }
 }
 
-const readMessageItems = async (id) => {
+const readMessageItems = async id => {
   try {
     const valueToUpdate = await MessageItem.findOne({
       where: { messageId: id }
     })
     if (!valueToUpdate) throw new Error(`Message Item ${id} not found.`)
-    const data = await MessageItem.update(
-      { isRead: 1 },
-      { where: { messageId: id } }
-    )
+    const data = await MessageItem.update({ isRead: 1 }, { where: { messageId: id } })
     return { isRead: data[0] }
   } catch (err) {
     throw new Error(err)
