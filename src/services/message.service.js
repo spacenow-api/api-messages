@@ -119,7 +119,7 @@ const readMessage = async (id, userId) => {
     const valueToUpdate = await Message.findOne({ where: { id } })
     if (!valueToUpdate) throw new Error(`Message ${id} not found.`)
     try {
-      await Message.update({ isRead: 1 }, { where: { id } })
+      // await Message.update({ isRead: 1 }, { where: { id } })
       await MessageItem.update(
         { isRead: 1 },
         {
