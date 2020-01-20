@@ -7,7 +7,7 @@ const paginate = require('../helpers/paginate.utils')
 
 const postMessageItem = async value => {
   try {
-    await Message.update({ isRead: 1 }, { where: { id: value.messageId } }) // For ordering pourposes
+    await Message.update({ isRead: 0 }, { where: { id: value.messageId } }) // before when : 1 => For ordering pourposes
     const data = await MessageItem.create(value)
     return data
   } catch (err) {

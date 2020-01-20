@@ -67,7 +67,7 @@ const getUserMessages = async (id, type, pageIndex = 0, pageSize = 10) => {
   const where = {
     where: condition,
     ...paginate(pageIndex, pageSize),
-    order: [['updatedAt', 'DESC'], ['isRead', 'ASC']],
+    order: [['updatedAt', 'DESC']], // , ['isRead', 'ASC']],
     include: [
       {
         model: MessageItem,
@@ -120,7 +120,7 @@ const readMessage = async (id, userId) => {
     if (!valueToUpdate) throw new Error(`Message ${id} not found.`)
     try {
       // await Message.update({ isRead: 1 }, { where: { id } })
-      await MessageItem.update(
+      const resp = await MessageItem.update(
         { isRead: 1 },
         {
           where: {
@@ -131,6 +131,7 @@ const readMessage = async (id, userId) => {
           }
         }
       )
+      if (resp) await Message.update({ isRead: 1 }, { where: { id } })
     } catch (err) {
       console.error(err)
       return { isRead: 0 }
