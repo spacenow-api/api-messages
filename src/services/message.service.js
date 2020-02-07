@@ -19,6 +19,9 @@ const postMessage = async value => {
         ...messageHostValues,
         messageId: data.id
       })
+      if (messageHostValues.reason === 'inspection') {
+        // Send inspection emails
+      }
     }
     await MessageItem.create({
       messageId: data.id,
@@ -67,12 +70,18 @@ const getUserMessages = async (id, type, pageIndex = 0, pageSize = 10) => {
   const where = {
     where: condition,
     ...paginate(pageIndex, pageSize),
-    order: [['updatedAt', 'DESC'], ['isRead', 'ASC']],
+    order: [
+      ['updatedAt', 'DESC'],
+      ['isRead', 'ASC']
+    ],
     include: [
       {
         model: MessageItem,
         as: 'messageItems',
-        order: [['isRead', 'ASC'], ['createdAt', 'DESC']],
+        order: [
+          ['isRead', 'ASC'],
+          ['createdAt', 'DESC']
+        ],
         limit: 1,
         separate: true
       },
