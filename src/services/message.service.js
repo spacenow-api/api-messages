@@ -24,7 +24,8 @@ const postMessage = async value => {
       console.log(messageHostValues, 'messageHostValues')
       if (messageHostValues.reason === 'inspection') {
         // Send inspection emails
-        await onSendEmail(`api-emails-${process.env.environment}-sendEmailInspectionNotification`, data.id)
+        // await onSendEmail(`api-emails-${process.env.environment}-sendEmailInspectionNotification`, data.id)
+        await onSendEmail(`api-emails-sandpit-sendEmailInspectionNotification`, data.id)
       }
     }
     await MessageItem.create({
