@@ -5,6 +5,7 @@ const { Op } = require('sequelize')
 const { Message, MessageItem, MessageHost } = require('../../db/models')
 const paginate = require('../helpers/paginate.utils')
 const reservationUtils = require('./../helpers/reservation.utils')
+const { onSendEmail } = require('./../helpers/email.function')
 
 const postMessage = async value => {
   try {
@@ -21,6 +22,7 @@ const postMessage = async value => {
       })
       if (messageHostValues.reason === 'inspection') {
         // Send inspection emails
+        await onSendEmail(`api-emails-${process.env.environment}-sendEmailInspectionNotification`, data.id)
       }
     }
     await MessageItem.create({
@@ -70,18 +72,12 @@ const getUserMessages = async (id, type, pageIndex = 0, pageSize = 10) => {
   const where = {
     where: condition,
     ...paginate(pageIndex, pageSize),
-    order: [
-      ['updatedAt', 'DESC'],
-      ['isRead', 'ASC']
-    ],
+    order: [['updatedAt', 'DESC'], ['isRead', 'ASC']],
     include: [
       {
         model: MessageItem,
         as: 'messageItems',
-        order: [
-          ['isRead', 'ASC'],
-          ['createdAt', 'DESC']
-        ],
+        order: [['isRead', 'ASC'], ['createdAt', 'DESC']],
         limit: 1,
         separate: true
       },
