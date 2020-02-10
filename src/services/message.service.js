@@ -14,12 +14,14 @@ const postMessage = async value => {
       hostId: value.hostId,
       guestId: value.guestId
     })
+    console.log('value', value)
     if (value.contactHost) {
       const messageHostValues = getNewContactHostMessage(value.contactHost)
       await MessageHost.create({
         ...messageHostValues,
         messageId: data.id
       })
+      console.log(messageHostValues, 'messageHostValues')
       if (messageHostValues.reason === 'inspection') {
         // Send inspection emails
         await onSendEmail(`api-emails-${process.env.environment}-sendEmailInspectionNotification`, data.id)
