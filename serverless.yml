@@ -45,6 +45,7 @@ dotenv:
     - DATABASE_HOST
     - DATABASE_USERNAME
     - DATABASE_PASSWORD
+    - environment
 
 provider:
   name: aws
@@ -71,6 +72,7 @@ provider:
     DATABASE_HOST: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_HOST~true}
     DATABASE_USERNAME: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_USER~true}
     DATABASE_PASSWORD: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_PASSWORD~true}
+    environment: ${self:custom.StageName}
 
 functions:
   post-message:
