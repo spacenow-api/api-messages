@@ -14,6 +14,11 @@ const postMessage = async value => {
       hostId: value.hostId,
       guestId: value.guestId
     })
+    await MessageItem.create({
+      messageId: data.id,
+      sentBy: value.guestId,
+      content: value.content
+    })
     console.log('value', value)
     if (value.contactHost) {
       const messageHostValues = getNewContactHostMessage(value.contactHost)
@@ -21,18 +26,13 @@ const postMessage = async value => {
         ...messageHostValues,
         messageId: data.id
       })
-      console.log(messageHostValues, 'messageHostValues')
       if (messageHostValues.reason === 'inspection') {
         // Send inspection emails
         // await onSendEmail(`api-emails-${process.env.environment}-sendEmailInspectionNotification`, data.id)
         await onSendEmail(`api-emails-sandpit-sendEmailInspectionNotification`, data.id)
       }
     }
-    await MessageItem.create({
-      messageId: data.id,
-      sentBy: value.guestId,
-      content: value.content
-    })
+
     return getMessage(data.id)
   } catch (err) {
     throw new Error(err)

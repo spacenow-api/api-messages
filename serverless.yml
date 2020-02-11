@@ -54,11 +54,6 @@ provider:
   stage: ${opt:stage, 'sandpit'}
   region: ap-southeast-2
   iamRoleStatements:
-    # - Effect: "Allow"
-    #   Action:
-    #     - "sqs:SendMessage"
-    #     - "sqs:GetQueueUrl"
-    #   Resource: "arn:aws:sqs:${opt:region, 'ap-southeast-2'}:${opt:accountId, ''}:${self:custom.SubdomainName}-${self:custom.TableName}"
     - Effect: Allow
       Action:
         - lambda:InvokeFunction
